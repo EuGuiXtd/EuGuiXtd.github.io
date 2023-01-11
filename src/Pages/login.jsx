@@ -1,39 +1,10 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 
 function login({ history }) {
   const [email, setEmail] = useState('');
 
   const [password, setPassword] = useState('');
-
-  const usuarios = [{
-    id: 1,
-    email: 'joao@gmail.com',
-    senha: 'joao123',
-  }, {
-    id: 2,
-    email: 'leo@gmail.com',
-    senha: 'leo1234',
-  }, {
-    id: 3,
-    email: 'luis@gmail.com',
-    senha: 'luis123',
-  }, {
-    id: 4,
-    email: 'lorena@gmail.com',
-    senha: 'lorena1',
-  }, {
-    id: 5,
-    email: 'vaca@gmail.com',
-    senha: 'vaca123',
-  }, {
-    id: 6,
-    email: 'bruno@gmail.com',
-    senha: 'bruno12',
-  }, {
-    id: 1,
-    email: 'rafael@gmail.com',
-    senha: 'rafael1',
-  }];
 
   const handleEmail = ({ target }) => {
     setEmail(target.value);
@@ -43,28 +14,37 @@ function login({ history }) {
     setPassword(target.value);
   };
 
-  const logins = usuarios.find((usuario) => usuario.email === email && usuario.senha === password);
-
-  const handleClick = () => {
-    history.push('/home');
-  };
-
-  const formValidation = () => {
-    if (logins === undefined) {
-      return true;
-    } return false;
-  };
+  const usuarios = JSON.parse(localStorage.getItem('user'));
 
   const registerClick = () => {
     history.push('/cadastros');
   };
+
+  const handleClick = async () => {
+    if (usuarios === null) {
+      const ret = await Swal.fire({
+        title: 'Error!',
+        text: 'Usuario Não Cadastrado',
+        icon: 'error',
+        confirmButtonText: 'cadastrar',
+        cancelButtonText: 'cancelar',
+        showCancelButton: true,
+      });
+      if (ret.isConfirmed) {
+        history.push('/cadastros');
+      }
+    } else if (usuarios.email === email && usuarios.password === password) {
+      history.push('/home');
+    }
+  };
+
   return (
     <section>
       <label htmlFor="inputsLogin">
         <input id="inputsLogin" placeholder="Email" onChange={handleEmail} />
         <input id="inputsLogin" placeholder="Senha" onChange={handlePassword} />
       </label>
-      <button type="button" disabled={formValidation()} onClick={handleClick}>Entrar</button>
+      <button type="button" onClick={handleClick}>Entrar</button>
       <button type="button" onClick={registerClick}>Cadastre-se</button>
     </section>
   );
